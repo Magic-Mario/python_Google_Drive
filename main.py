@@ -1,8 +1,8 @@
 import gspread
 from dataclasses import dataclass
 from typing import Any, Optional
-import datetime
 import pandas as pd
+from datetime import date, datetime
 from validators.url import url
 
 
@@ -19,7 +19,6 @@ class Patients:
     cc: int
     email: str
     phone_number: int
-    
 
     def authentication(self):
         """Func to authenticate if the received url is valid and related to google spreadsheets"""
@@ -55,9 +54,10 @@ class Patients:
 
     def add_patient(self, wks):
         """Func to add a new patient in the database"""
-
+        date = datetime.now()
+        init_date = date.strftime("%y-%m-%d")
         row_value = [self.name, self.last_name, self.cc, self.email,
-                     self.phone_number]
+                     self.phone_number, init_date]
         return wks.append_row(row_value)
 
     def update_patient(self):
@@ -82,10 +82,10 @@ class Patients:
 
 
 if __name__ == '__main__':
-    name = input("Nombre: ")
-    last_name = input("Apellido: ")
-    cc = input("CC: ")
-    email = input("Email: ")
+    name = input("Nombre: ").capitalize()
+    last_name = input("Apellido: ").capitalize()
+    cc = int(input("CC: "))
+    email = input("Email: ").lower()
     phone_number = int(input("Numero de contacto: "))
     func = Patients(name, last_name, cc, email, phone_number)
     func.main()
