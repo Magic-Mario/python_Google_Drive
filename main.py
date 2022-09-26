@@ -2,6 +2,7 @@ import gspread
 from dataclasses import dataclass
 from typing import Any, Optional
 import datetime
+import pandas as pd
 from validators.url import url
 
 
@@ -11,14 +12,14 @@ class Patients:
     # *Authentication variables
     auth = gspread.service_account("creds.json")
 
-    # # *Table variables
-    # self.name: str
-    # self.last_name: str
-    # self.cc: int
-    # email: str
-    # phone_number: int
-    # init_date: str
-    # end_date: str
+    # *Table variables
+    import datetime
+    name: str
+    last_name: str
+    cc: int
+    email: str
+    phone_number: int
+    
 
     def authentication(self):
         """Func to authenticate if the received url is valid and related to google spreadsheets"""
@@ -35,9 +36,9 @@ class Patients:
         """Func to select which sheet you want to use"""
 
         title = input("Escribe el nombre de la tabla ha utilizar: ")
-        return sheet.worksheet(title="Test1")
+        return sheet.worksheet(title)
 
-    def fill_table(self, table):
+    def fill_table(self, wks):
         """Func to find all the cells without a value and fill them with Null value """
 
         for cell in table.findall(""):
@@ -45,19 +46,19 @@ class Patients:
                 table.update_cell(cell.row, cell.col, "Null")
         return table.get_all_values()
 
-    def find_patient(self):
+    def find_patient(self, wks):
         """Func to check and find if a patient is in the database"""
 
         info = input("Escriba el dato del paciente: ")  # Patient info
-        wks = self.select_sheet()
-        if wks.findall(name):
-            return wks.findall(info)
-        else:
-            print("El paciente no fue encontrado")
+        for cell in table.findall(info):
+            return table.row_values(cell.row)  # List with row's info
 
-    def add_patient(self):
+    def add_patient(self, wks):
         """Func to add a new patient in the database"""
-        pass
+
+        row_value = [self.name, self.last_name, self.cc, self.email,
+                     self.phone_number]
+        return wks.append_row(row_value)
 
     def update_patient(self):
         """Func to update patients info"""
@@ -70,11 +71,21 @@ class Patients:
 
     def main(self):
         sheet = self.authentication()
-        table = self.select_sheet(sheet)
-        return print(self.fill_table(table))
+        wks = self.select_sheet(sheet)
+        option = input("Elige una función: ").lower()
+        if option == "fill":
+            return print(self.fill_table(wks))
+        elif option == "find":
+            return print(self.find_patient(wks))
+        elif option == "new":
+            return print(self.add_patient(wks))
 
 
 if __name__ == '__main__':
-
-    func = Patients()
+    name = input("Nombre: ")
+    last_name = input("Apellido: ")
+    cc = input("CC: ")
+    email = input("Email: ")
+    phone_number = int(input("Numero de contacto: "))
+    func = Patients(name, last_name, cc, email, phone_number)
     func.main()
