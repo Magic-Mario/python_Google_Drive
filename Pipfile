@@ -11,6 +11,7 @@ google-auth-oauthlib = "*"
 gspread = "*"
 validators = "*"
 pandas = "*"
+gspread-pandas = "*"
 
 [dev-packages]
 autopep8 = "*"

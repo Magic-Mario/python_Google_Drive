@@ -12,14 +12,6 @@ class Patients:
     # *Authentication variables
     auth = gspread.service_account("creds.json")
 
-    # *Table variables
-    import datetime
-    name: str
-    last_name: str
-    cc: int
-    email: str
-    phone_number: int
-
     def authentication(self):
         """Func to authenticate if the received url is valid and related to google spreadsheets"""
 
@@ -37,33 +29,51 @@ class Patients:
         title = input("Escribe el nombre de la tabla ha utilizar: ")
         return sheet.worksheet(title)
 
-    def fill_table(self, wks):
+    def fill_wks(self, wks):
         """Func to find all the cells without a value and fill them with Null value """
 
-        for cell in table.findall(""):
+        for cell in wks.findall(""):
             if cell.value == "":
-                table.update_cell(cell.row, cell.col, "Null")
-        return table.get_all_values()
+                wks.update_cell(cell.row, cell.col, "Null")
+        return wks.get_all_values()
 
     def find_patient(self, wks):
-        """Func to check and find if a patient is in the database"""
+        """Func to check and find if a patient is in the database and return 
+        a list with the values in the row"""
 
-        info = input("Escriba el dato del paciente: ")  # Patient info
-        for cell in table.findall(info):
-            return table.row_values(cell.row)  # List with row's info
+        # Patient info
+        info = input("Escriba el dato del paciente: ").capitalize()
+        for cell in wks.findall(info):
+            return wks.row_values(cell.row)  # List with row's info
 
     def add_patient(self, wks):
         """Func to add a new patient in the database"""
+        name = input("Nombre: ").capitalize()
+        last_name = input("Apellido: ").capitalize()
+        cc = int(input("CC: "))
+        email = input("Email: ").lower()
+        phone_number = int(input("Numero de contacto: "))
         date = datetime.now()
-        init_date = date.strftime("%y-%m-%d")
-        row_value = [self.name, self.last_name, self.cc, self.email,
-                     self.phone_number, init_date]
+        init_date = date.strftime("%d-%m-%y")
+        row_value = [name, last_name, cc, email,
+                     phone_number, init_date]
         return wks.append_row(row_value)
 
-    def update_patient(self):
+    def update_patient(self, wks):
         """Func to update patients info"""
+        patient = self.find_patient(wks)
+        cell = wks.find(patient[2])
+        cell_list = wks.range(cell.row, 1, cell.row, wks.col_count)
 
-        pass
+        cell_list[0].value = input(f"Nombre [{cell_list[0].value}]:")
+        cell_list[1].value = input(f"Apellido [{cell_list[1].value}]:")
+        cell_list[2].value = input(f"CC [{cell_list[2].value}]:")
+        cell_list[3].value = input(f"Correo Electrónico [{cell_list[3].value}]:")
+        cell_list[4].value = input(f"Numero de teléfono [{cell_list[4].value}]:")
+
+        for index, _ in enumerate(cell_list):
+            wks.update_cell(cell_list[index].row, cell_list[index].col, cell_list[index].value)
+        return print("Updated")
 
     def delete_patient(self):
         """Func to remove a patient from the database"""
@@ -72,20 +82,17 @@ class Patients:
     def main(self):
         sheet = self.authentication()
         wks = self.select_sheet(sheet)
+        self.fill_wks(wks)
         option = input("Elige una función: ").lower()
-        if option == "fill":
-            return print(self.fill_table(wks))
-        elif option == "find":
+
+        if option == "find":
             return print(self.find_patient(wks))
         elif option == "new":
             return print(self.add_patient(wks))
+        elif option == "update":
+            return self.update_patient(wks)
 
 
 if __name__ == '__main__':
-    name = input("Nombre: ").capitalize()
-    last_name = input("Apellido: ").capitalize()
-    cc = int(input("CC: "))
-    email = input("Email: ").lower()
-    phone_number = int(input("Numero de contacto: "))
-    func = Patients(name, last_name, cc, email, phone_number)
+    func = Patients()
     func.main()

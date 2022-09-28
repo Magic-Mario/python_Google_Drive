@@ -1,5 +1,6 @@
 import gspread
-
+import pandas as pd
+from datetime import date, datetime
 auth = gspread.service_account("creds.json")
 
 sh = auth.open_by_url(
@@ -7,23 +8,35 @@ sh = auth.open_by_url(
 
 wks = sh.worksheet("Test1")
 
-a = wks.findall("")
-for i in a:
-    if i.value == "":
-        wks.update_cell(i.row, i.col, "Null")
+cell = wks.find("Gary")
+
+cell_list = wks.range(cell.row, 1, cell.row, 6)
+
+cell_list[0].value = "Mark"
+
+wks.update_cell(cell_list[0].row, cell_list[0].col, cell_list[0].value)
+# a = wks.findall("")
+# for i in a:
+#     if i.value == "":
+#         wks.update_cell(i.row, i.col, "Null")
 
 
 # * Adding a new patient
 
-info = input("Escriba el dato del paciente: ")  # Patient info
+# info = input("Escriba el dato del paciente: ")  # Patient info
 
-for cell in wks.findall(info):
-    row_value = wks.row_values(cell.row) #List of the row
-    row_value[0] = "Todo Terreno"
-    wks.append_row(row_value)
+# for cell in wks.findall(info):
+#     row_value = wks.row_values(cell.row) #List of the row
+#     row_value[0] = "Todo Terreno"
+#     wks.append_row(row_value)
 
+# date = datetime.now()
 
+# a = date.strftime("%y-%m-%d")
 
+# ls = [a]
+# print(ls)
+    
 
 """
 !!!SISTEMA DE NOTIFICACIONES!!!
