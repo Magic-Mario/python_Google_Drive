@@ -12,7 +12,6 @@ gspread = "*"
 validators = "*"
 pandas = "*"
 gspread-pandas = "*"
-pyqt5 = "*"
 
 [dev-packages]
 autopep8 = "*"
