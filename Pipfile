@@ -12,6 +12,7 @@ gspread = "*"
 validators = "*"
 pandas = "*"
 gspread-pandas = "*"
+pillow = "*"
 
 [dev-packages]
 autopep8 = "*"
